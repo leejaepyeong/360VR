@@ -5,6 +5,14 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Video;
 using UnityEngine.UI;
 
+
+// 각 장르의 영화 클립
+[System.Serializable]
+public class MovieClip
+{
+    public VideoClip[] videoClips;
+}
+
 public class SceneMove : MonoBehaviour
 {
     public int SceneNumber; // 신 넘버
@@ -14,13 +22,17 @@ public class SceneMove : MonoBehaviour
 
     public GameObject[] movieGenrePanel;    // 영화 장르 패널
 
-    public VideoPlayer video;
+    public RawImage mScreen = null; // 영화  RawImage
+    public VideoPlayer video = null;    //  비디오플레이어
+    public MovieClip[] movieClips;  // 영화 장르
     AudioSource audio;
 
     private void Start()
     {
         video = GetComponentInChildren<VideoPlayer>();
         audio = GetComponent<AudioSource>();
+
+        StartCoroutine(PrepareVideo());
     }
 
     //영화 장르 고르기
@@ -36,12 +48,29 @@ public class SceneMove : MonoBehaviour
 
     }
 
+    protected IEnumerator PrepareVideo()
+    {
+        // 비디오 준비
+        video.Prepare();
+
+        // 비디오가 준비되는 것을 기다림
+        while (!video.isPrepared)
+        {
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        // VideoPlayer의 출력 texture를 RawImage의 texture로 설정한다
+        mScreen.texture = video.texture;
+    }
+
     // 장르 속 몇번째 영화
     public void MovieBtn(int _num)
     {
         SceneNumber = _num;
 
-        SceneManager.LoadScene("Movie" + movieGenre + "_" + SceneNumber);
+        video.clip = movieClips[movieGenre].videoClips[SceneNumber];
+
+        StartCoroutine(PrepareVideo());
     }
 
     // 재생 / 일시정지
@@ -73,4 +102,10 @@ public class SceneMove : MonoBehaviour
     }
 
     
+    // 영화 정보보기
+    public void MovieInfo()
+    {
+
+    }
+
 }
