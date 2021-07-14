@@ -6,7 +6,7 @@ using UnityEngine.Video;
 using UnityEngine.UI;
 
 
-// 각 장르의 영화 클립
+// movie genre clip
 [System.Serializable]
 public class MovieClip
 {
@@ -15,16 +15,19 @@ public class MovieClip
 
 public class SceneMove : MonoBehaviour
 {
-    public int SceneNumber; // 신 넘버
-    public int movieGenre;   // 영화 장르
+    public int SceneNumber; // scene Number
+    public int movieGenre;   // movie genre
     // 0 : ACTION , 1 : HORROR , 2 : COMEDY , 3 : ANIMATION, 
-    public bool isShow = true; // 상영중
+    public bool isShow = true; // movie show
 
-    public GameObject[] movieGenrePanel;    // 영화 장르 패널
+    public GameObject[] movieGenrePanel;    // 4 genre panel
 
-    public RawImage mScreen = null; // 영화  RawImage
-    public VideoPlayer video = null;    //  비디오플레이어
-    public MovieClip[] movieClips;  // 영화 장르
+    public RawImage mScreen = null; // screen  RawImage
+    public VideoPlayer video = null;    //  movie video
+    public MovieClip[] movieClips;  // movie clip
+
+    public GameObject[] processVolumeEffect;   // processVolume
+
     AudioSource audio;
 
     private void Start()
@@ -35,7 +38,7 @@ public class SceneMove : MonoBehaviour
         StartCoroutine(PrepareVideo());
     }
 
-    //영화 장르 고르기
+    //change movie genre
     public void MovieGenreBtn(int _movieGenre)
     {
         movieGenre = _movieGenre;
@@ -48,22 +51,23 @@ public class SceneMove : MonoBehaviour
 
     }
 
+    // movie prepare
     protected IEnumerator PrepareVideo()
     {
-        // 비디오 준비
+        // ready
         video.Prepare();
 
-        // 비디오가 준비되는 것을 기다림
+        // ready on
         while (!video.isPrepared)
         {
             yield return new WaitForSeconds(0.5f);
         }
 
-        // VideoPlayer의 출력 texture를 RawImage의 texture로 설정한다
+        // VideoPlayer scene texture = RawImage texture
         mScreen.texture = video.texture;
     }
 
-    // 장르 속 몇번째 영화
+    // choose movie clip
     public void MovieBtn(int _num)
     {
         SceneNumber = _num;
@@ -73,7 +77,7 @@ public class SceneMove : MonoBehaviour
         StartCoroutine(PrepareVideo());
     }
 
-    // 재생 / 일시정지
+    // play and pause button
     public void StopBtn()
     {
         isShow = !isShow;
@@ -89,23 +93,33 @@ public class SceneMove : MonoBehaviour
             
     }
 
-    // 리셋
+    // reset button
     public void ResetBtn()
     {
         video.time = 0f;
     }
 
-    // 배속
+    // change speed
     public void OnFastVideo(float speed)
     {
         video.playbackSpeed = speed;
     }
 
     
-    // 영화 정보보기
-    public void MovieInfo()
+    // movie Info
+    public void MovieInfoBtn()
     {
 
+    }
+
+    public void ChangeVolume(int _num)
+    {
+        foreach(GameObject volume in processVolumeEffect)
+        {
+            volume.SetActive(false);
+        }
+
+        processVolumeEffect[_num].SetActive(true);
     }
 
 }
